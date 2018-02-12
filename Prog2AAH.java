@@ -30,41 +30,33 @@ public class Prog2AAH
 	private static String checkForRegex(String in)
 	{
 
-		ArrayList<LinkedHashMap<String,String>> mapArray = new ArrayList<LinkedHashMap<String,String>>();
+		LinkedHashMap<String,String> regexes = genRegexHash();
+		for (String key : regexes.keySet())
+		{
+			Pattern p = Pattern.compile(key);
+			Matcher m = p.matcher(in);
+            // System.out.println();
 
-		mapArray.add(createReservedWordsMap());
-		mapArray.add(createSymbolsMap());
-		mapArray.add(createOtherMap());
+            if(m.lookingAt())
+            {
+                // System.out.print("Key: "+key);
+                // System.out.println(" In: "+in);
 
-		for (int i =0; i<mapArray.size();i++)
-		{	
-			LinkedHashMap<String,String> temp = mapArray.get(i);
-			for (String key : temp.keySet())
-			{
-				Pattern p = Pattern.compile(key);
-				Matcher m = p.matcher(in);
-                // System.out.println();
+				String matchedStr = m.group();
 
-                if(m.lookingAt())
+                if (!matchedStr.equals(" "))
                 {
-                    // System.out.print("Key: "+key);
-                    // System.out.println(" In: "+in);
-
-					String matchedStr = m.group();
-
-                    if (!matchedStr.equals(" "))
-                    {
-    					String output = temp.get(key)+", "+matchedStr;
-    					System.out.println(output);   
-                    }
-					int offset = m.end();
-					String remaining = in.substring(offset);
-                    // System.out.println(remaining.replace(' ','_'));
-					return remaining;
-				}
+					String output = regexes.get(key)+", "+matchedStr;
+					System.out.println(output);   
+                }
+				int offset = m.end();
+				String remaining = in.substring(offset);
+                // System.out.println(remaining.replace(' ','_'));
+				return remaining;
 			}
-
 		}
+
+		
         // System.out.print("Key: "+key);
         System.out.println(" In->|"+in.replace(" ","_"));
 		System.out.println("<error> "+in+",");
@@ -72,32 +64,20 @@ public class Prog2AAH
         return "";
 	}
 	
-	private static LinkedHashMap<String,String> createReservedWordsMap()
+	private static LinkedHashMap<String,String> genRegexHash()
 	{
 		LinkedHashMap<String,String> d = new LinkedHashMap<String,String>();
 		d.put("print\\s+","<print>");
 		d.put("input\\s+","<input>");
-		return d;
-	}
-
-	private static LinkedHashMap<String,String> createSymbolsMap()
-	{
-		LinkedHashMap<String,String> d = new LinkedHashMap<String,String>();
-		d.put("\\(","<lparen>");
-		d.put("\\)","<rparen>");
-		d.put("[\\+\\-]","<add_op>");
-		d.put("(\\/\\/)|[\\*\\/\\%]","<mult_op>");
-		d.put("(<=)|(>=)|[<>]|={2}|(!=)","<rel_op>");
-		d.put("=","<assign>");
+        d.put("\\(","<lparen>");
+        d.put("\\)","<rparen>");
+        d.put("[\\+\\-]","<add_op>");
+        d.put("(\\/\\/)|[\\*\\/\\%]","<mult_op>");
+        d.put("(<=)|(>=)|[<>]|={2}|(!=)","<rel_op>");
+        d.put("=","<assign>");
         d.put("\\s+","");
-		return d;
-	}
-
-	private static LinkedHashMap<String,String> createOtherMap()
-	{
-		LinkedHashMap<String,String> d = new LinkedHashMap<String,String>();
-		d.put("[a-zA-z]([a-zA-Z]|\\d)*","<id>");
-		d.put("(\\d+\\.\\d+)|(\\d+)","<number>");
+        d.put("[a-zA-z]([a-zA-Z]|\\d)*","<id>");
+        d.put("(\\d+\\.\\d+)|(\\d+)","<number>");
 		return d;
 	}
 
