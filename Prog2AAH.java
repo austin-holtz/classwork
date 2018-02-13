@@ -8,8 +8,12 @@ import java.io.*;
 public class Prog2AAH
 {
 
+    protected static LinkedHashMap<String,String> regexes = genRegexHash();
+
 	public static void main(String[] args)
 	{
+        // this.regexes = genRegexHash();
+
 		String filename = args[0];
 		FileByLine fbl = new FileByLine(filename);
 		String in = fbl.nextLine();
@@ -30,7 +34,7 @@ public class Prog2AAH
 	private static String checkForRegex(String in)
 	{
 
-		LinkedHashMap<String,String> regexes = genRegexHash();
+		// LinkedHashMap<String,String> regexes = this.regexes;
 		for (String key : regexes.keySet())
 		{
 			Pattern p = Pattern.compile(key);
@@ -39,27 +43,30 @@ public class Prog2AAH
 
             if(m.lookingAt())
             {
-                // System.out.print("Key: "+key);
-                // System.out.println(" In: "+in);
+
+                if (regexes.get(key).equals("<error>"))
+                {
+                    break;
+                }
 
 				String matchedStr = m.group();
 
                 if (!matchedStr.equals(" "))
                 {
 					String output = regexes.get(key)+", "+matchedStr;
-					System.out.println(output);   
+					System.    out.println(output);   
                 }
 				int offset = m.end();
 				String remaining = in.substring(offset);
-                // System.out.println(remaining.replace(' ','_'));
 				return remaining;
 			}
+
 		}
 
 		
         // System.out.print("Key: "+key);
-        System.out.println(" In->|"+in.replace(" ","_"));
-		System.out.println("<error> "+in+",");
+        // System.out.println(" In->|"+in.replace(" ","_"));
+		System.out.println("<error> ,"+in);
 		System.exit(0);
         return "";
 	}
@@ -76,12 +83,13 @@ public class Prog2AAH
         d.put("(<=)|(>=)|[<>]|={2}|(!=)","<rel_op>");
         d.put("=","<assign>");
         d.put("\\s+","");
+        d.put("\\d+[a-zA-Z]+","<error>");
         d.put("[a-zA-z]([a-zA-Z]|\\d)*","<id>");
         d.put("(\\d+\\.\\d+)|(\\d+)","<number>");
 		return d;
 	}
 
-	private static class FileByLine
+	private static class FileByLine extends Prog2AAH
 	{
 		private Scanner sc;
 		private static ArrayList<String> tokenBuffer;
@@ -119,5 +127,10 @@ public class Prog2AAH
 				return "NO MORE TOKENS";
 			}		
 		}
+
+        private class tokenizer extends FileByLine
+        {
+
+        }
 	}
 }
