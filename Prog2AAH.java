@@ -15,20 +15,23 @@ public class Prog2AAH
         // this.regexes = genRegexHash();
 
 		String filename = args[0];
-		FileByLine fbl = new FileByLine(filename);
-		String in = fbl.nextLine();
+		FileByToken fbl = new FileByToken(filename);
+		String in = fbl.nextToken();
 		do
 		{
-			String s = checkForRegex(in);
-			if (!s.equals(""))
-			{
-				in = s;
-			}
+			checkForRegex(in);
+			in = fbl.nextToken();
 
-            else
-			in = fbl.nextLine();	
+			// String s = checkForRegex(in);
+			// if (!s.equals(""))
+			// {
+			// 	in = s;
+			// }
+
+   //          else
+			// in = fbl.nextToken();
 		}
-		while (!in.equals("NO MORE TOKENS"));
+		while (!in.equals(""));
 	}
 
 	private static String checkForRegex(String in)
@@ -37,28 +40,23 @@ public class Prog2AAH
 		// LinkedHashMap<String,String> regexes = this.regexes;
 		for (String key : regexes.keySet())
 		{
-			Pattern p = Pattern.compile(key);
-			Matcher m = p.matcher(in);
+			// Pattern p = Pattern.compile(key);
+			// Matcher m = p.matcher(in);
             // System.out.println();
 
-            if(m.lookingAt())
+            if(in.matches(key))
             {
 
-                if (regexes.get(key).equals("<error>"))
-                {
-                    break;
-                }
+				// String matchedStr = m.group();
 
-				String matchedStr = m.group();
-
-                if (!matchedStr.equals(" "))
+                if (true)
                 {
-					String output = regexes.get(key)+", "+matchedStr;
-					System.    out.println(output);   
+					String output = regexes.get(key)+", "+in;
+					System.out.println(output);   
                 }
-				int offset = m.end();
-				String remaining = in.substring(offset);
-				return remaining;
+				// int offset = m.end();
+				// String remaining = in.substring(offset);
+				return "";
 			}
 
 		}
@@ -66,7 +64,7 @@ public class Prog2AAH
 		
         // System.out.print("Key: "+key);
         // System.out.println(" In->|"+in.replace(" ","_"));
-		System.out.println("<error> ,"+in);
+		System.out.println("<error>, "+in);
 		System.exit(0);
         return "";
 	}
@@ -74,8 +72,8 @@ public class Prog2AAH
 	private static LinkedHashMap<String,String> genRegexHash()
 	{
 		LinkedHashMap<String,String> d = new LinkedHashMap<String,String>();
-		d.put("print\\s+","<print>");
-		d.put("input\\s+","<input>");
+		d.put("print","<print>");
+		d.put("input","<input>");
         d.put("\\(","<lparen>");
         d.put("\\)","<rparen>");
         d.put("[\\+\\-]","<add_op>");
@@ -83,30 +81,50 @@ public class Prog2AAH
         d.put("(<=)|(>=)|[<>]|={2}|(!=)","<rel_op>");
         d.put("=","<assign>");
         d.put("\\s+","");
-        d.put("\\d+[a-zA-Z]+","<error>");
         d.put("[a-zA-z]([a-zA-Z]|\\d)*","<id>");
         d.put("(\\d+\\.\\d+)|(\\d+)","<number>");
 		return d;
 	}
 
-	private static class FileByLine extends Prog2AAH
+	private static class FileByToken extends Prog2AAH
 	{
 		private Scanner sc;
-		private static ArrayList<String> tokenBuffer;
+		private Scanner tokens;
 
-		public FileByLine(String filename)
+		public FileByToken(String filename)
 		{
 			try
 			{
 				File f = new File(filename);
 				this.sc = new Scanner(f);
+				this.tokens = tokenize(fileToString());
 			}catch (FileNotFoundException e)
 			{
 				System.out.println("File not found!");
 				System.exit(0);
 			}
 
-			this.tokenBuffer = new ArrayList<String>();
+		}
+
+		public String nextToken()
+		{
+			if (this.tokens.hasNext())
+				return tokens.next();
+			// else
+			// 	System.exit(0);
+			return "";
+		}
+
+		public String fileToString(){
+			String out = "";
+			String temp = "";
+			do
+			{
+				out += temp+"\n";
+				temp = nextLine();
+			}
+			while (!temp.equals("NO MORE TOKENS"));
+			return out;
 		}
 
 		public String nextLine()
@@ -128,9 +146,21 @@ public class Prog2AAH
 			}		
 		}
 
-        private class tokenizer extends FileByLine
+        private Scanner tokenize(String line)
         {
+        	String[] needles = {"(",")","+","-","*","//","/","%","<=",">=","==","!=","<",">","="};
 
+        	String out = line;
+
+        	for (int i = 0;i<needles.length;i++)
+        	{
+        		out = out.replaceAll(needles[i]," "+needles[i]+" ");
+        	}
+
+
+        	return new Scanner(out);
         }
+
+
 	}
 }
