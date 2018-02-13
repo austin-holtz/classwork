@@ -148,14 +148,29 @@ public class Prog2AAH
 
         private Scanner tokenize(String line)
         {
-        	String[] needles = {"(",")","+","-","*","//","/","%","<=",">=","==","!=","<",">","="};
-
+        	String[] needles = {"\\(","\\)","\\+","\\-","\\*","\\/\\/","\\/","%","<=",">=","==","!=","<",">","="};
+        
         	String out = line;
+		
+		out = out.replaceAll("//"," @integerdivide@ ");
+		out = out.replaceAll("<="," @lessthanequal@ ");
+		out = out.replaceAll(">="," @greaterthanequal@ ");
+		out = out.replaceAll("!="," @notequal@ ");
+		out = out.replaceAll("=="," @equalequal@ ");
+		
+                
+	
 
         	for (int i = 0;i<needles.length;i++)
         	{
         		out = out.replaceAll(needles[i]," "+needles[i]+" ");
         	}
+        	
+        	out = out.replaceAll("@integerdivide@","//");
+		out = out.replaceAll("@lessthanequal@","<=");
+		out = out.replaceAll("@greaterthanequal@",">=");
+		out = out.replaceAll("@equalequal@","==");
+		out = out.replaceAll("@notequal@","!=");
 
 
         	return new Scanner(out);
