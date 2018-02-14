@@ -1,4 +1,3 @@
-//Austin Holtz 0988217 austin.a.holtz@und.edu
 
 import java.util.*;
 import java.io.*;
