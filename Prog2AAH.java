@@ -1,70 +1,49 @@
-// Austin Holtz Program 2 austin.a.holtz@und.edu
+//Austin Holtz 0988217 austin.a.holtz@und.edu
 
 import java.util.*;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 import java.io.*;
 
 public class Prog2AAH
 {
-
-    protected static LinkedHashMap<String,String> regexes = genRegexHash();
+    private static LinkedHashMap<String,String> regexes = genRegexHash();
 
 	public static void main(String[] args)
 	{
-        // this.regexes = genRegexHash();
-
-		String filename = args[0];
-		FileByToken fbl = new FileByToken(filename);
-		String in = fbl.nextToken();
-		do
+		try
 		{
-			checkForRegex(in);
-			in = fbl.nextToken();
-
-			// String s = checkForRegex(in);
-			// if (!s.equals(""))
-			// {
-			// 	in = s;
-			// }
-
-   //          else
-			// in = fbl.nextToken();
+			String filename = args[0];
+	        FileByToken fbt = new FileByToken(filename);
+			String in = fbt.nextToken();
+			do
+			{
+				checkForRegex(in);
+				in = fbt.nextToken();
+			}
+			while (!in.equals(""));
 		}
-		while (!in.equals(""));
+		catch(ArrayIndexOutOfBoundsException e)
+		{
+			System.out.println("Please provide a filename!");
+			System.exit(0);
+		}	
 	}
 
 	private static String checkForRegex(String in)
 	{
-
-		// LinkedHashMap<String,String> regexes = this.regexes;
 		for (String key : regexes.keySet())
 		{
-			// Pattern p = Pattern.compile(key);
-			// Matcher m = p.matcher(in);
-            // System.out.println();
-
             if(in.matches(key))
             {
-
-				// String matchedStr = m.group();
-
-                if (true)
-                {
-					String output = regexes.get(key)+", "+in;
-					System.out.println(output);   
-                }
-				// int offset = m.end();
-				// String remaining = in.substring(offset);
+                
+            	String output = String.format("%10s %s",regexes.get(key)+",",in);
+				// String output = s+" "+in;
+				System.out.println(output);   
 				return "";
 			}
 
 		}
-
 		
-        // System.out.print("Key: "+key);
-        // System.out.println(" In->|"+in.replace(" ","_"));
-		System.out.println("<error>, "+in);
+		System.out.format("%10s %s%n","<error>,",in);
 		System.exit(0);
         return "";
 	}
@@ -80,13 +59,12 @@ public class Prog2AAH
         d.put("(\\/\\/)|[\\*\\/\\%]","<mult_op>");
         d.put("(<=)|(>=)|[<>]|={2}|(!=)","<rel_op>");
         d.put("=","<assign>");
-        d.put("\\s+","");
         d.put("[a-zA-z]([a-zA-Z]|\\d)*","<id>");
         d.put("(\\d+\\.\\d+)|(\\d+)","<number>");
 		return d;
 	}
 
-	private static class FileByToken extends Prog2AAH
+	private static class FileByToken
 	{
 		private Scanner sc;
 		private Scanner tokens;
@@ -110,8 +88,6 @@ public class Prog2AAH
 		{
 			if (this.tokens.hasNext())
 				return tokens.next();
-			// else
-			// 	System.exit(0);
 			return "";
 		}
 
@@ -152,30 +128,24 @@ public class Prog2AAH
         
         	String out = line;
 		
-		out = out.replaceAll("//"," @integerdivide@ ");
-		out = out.replaceAll("<="," @lessthanequal@ ");
-		out = out.replaceAll(">="," @greaterthanequal@ ");
-		out = out.replaceAll("!="," @notequal@ ");
-		out = out.replaceAll("=="," @equalequal@ ");
+			out = out.replaceAll("<="," @lessthanequal@ ");
+			out = out.replaceAll(">="," @greaterthanequal@ ");
+			out = out.replaceAll("!="," @notequal@ ");
+			out = out.replaceAll("=="," @equalequal@ ");
+			out = out.replaceAll("\\/\\/"," @integerdivide@ ");
 		
-                
-	
-
         	for (int i = 0;i<needles.length;i++)
         	{
         		out = out.replaceAll(needles[i]," "+needles[i]+" ");
         	}
         	
-        	out = out.replaceAll("@integerdivide@","//");
-		out = out.replaceAll("@lessthanequal@","<=");
-		out = out.replaceAll("@greaterthanequal@",">=");
-		out = out.replaceAll("@equalequal@","==");
-		out = out.replaceAll("@notequal@","!=");
-
+			out = out.replaceAll("@lessthanequal@","<=");
+			out = out.replaceAll("@greaterthanequal@",">=");
+			out = out.replaceAll("@equalequal@","==");
+			out = out.replaceAll("@notequal@","!=");
+			out = out.replaceAll("@integerdivide@","//");
 
         	return new Scanner(out);
         }
-
-
 	}
 }
